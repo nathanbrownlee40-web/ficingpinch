@@ -649,3 +649,59 @@ body{overflow-x:hidden;}
 }
 
 canvas{image-rendering:crisp-edges;image-rendering:pixelated;}
+/* ================================
+   MOBILE HARD FIX (NO PINCH ZOOM)
+   ================================ */
+
+@media (max-width: 768px) {
+
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .container {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  /* Cards & sections */
+  .card,
+  .tracker,
+  .trackAdd,
+  .bankroll,
+  .roi,
+  .league-performance {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Tracker charts */
+  canvas,
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Fix any forced widths */
+  * {
+    max-width: 100vw;
+  }
+
+  /* Tracker rows stack vertically */
+  .trackerRow,
+  .trackerGrid,
+  .trackerStats {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+  }
+
+  /* Inputs & buttons fit screen */
+  input,
+  select,
+  button {
+    width: 100%;
+    max-width: 100%;
+  }
+}
