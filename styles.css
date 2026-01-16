@@ -158,7 +158,9 @@ body.compact .cardList{display:block}
   padding: 10px 12px;
   margin-bottom: 10px;
 }
-.cardTop{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+.cardTop{display:flex; justify-content:space-between; gap:10px; align-items:flex-start; flex-wrap:wrap}
+.cardLeft{flex:1 1 240px; min-width:0}
+.cardRight{flex:1 1 180px; max-width:100%; display:flex; flex-direction:column; align-items:flex-end; gap:10px; min-width:0}
 .cardTitle{font-weight: 950; font-size: 14px}
 .cardSub{color: var(--muted); font-size: 12px; margin-top: 2px}
 .cardGrid{display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px 10px; margin-top: 10px}
@@ -377,12 +379,18 @@ body.trackerView #tableWrap{ display:none !important; }
   align-items:center;
 }
 .soIn{
-  width: 70px;
+  width: clamp(64px, 20vw, 90px);
+  box-sizing: border-box;
   padding: 6px 8px;
   border-radius: 12px;
   border:1px solid rgba(255,255,255,.14);
   background: rgba(0,0,0,.18);
   color: inherit;
+}
+
+@media (max-width: 420px){
+  .cardRight{ align-items:stretch; }
+  .trackActions{ justify-content:flex-start; }
 }
 @media (min-width: 520px){
   .trackerHeader{ grid-template-columns: 1fr 1fr; }

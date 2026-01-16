@@ -1127,7 +1127,9 @@ const sections = [
     secWrap.className = "trackSection";
 
     const key = `trk_collapsed_${sec.key}`;
-    const isCollapsed = localStorage.getItem(key) === "1";
+    const stored = localStorage.getItem(key);
+    // Default: keep Pending open so it doesn't look like picks disappeared
+    const isCollapsed = stored ? (stored === "1") : (sec.key !== "pending");
 
     const h = document.createElement("button");
     h.type = "button";
