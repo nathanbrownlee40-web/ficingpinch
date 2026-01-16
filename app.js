@@ -1046,16 +1046,11 @@ function renderAccas(){
         b.textContent = label;
         b.addEventListener("click",(ev)=>{ ev.stopPropagation(); fn(); renderAccas(); });
         return b;
-      };const actions = document.createElement("div");
-actions.className = "cardActions";
-
-actions.appendChild(mkBtn("✅", "win", () => setStatus("won")));
-actions.appendChild(mkBtn("❌", "lose", () => setStatus("lost")));
-actions.appendChild(mkBtn("⚪", "void", () => setStatus("void")));
-actions.appendChild(mkBtn("📋", "copy", async () => copyPick(t)));
-actions.appendChild(mkBtn("🗑", "del", () => removePick(t.id)));
-
-right.appendChild(actions);
+      };
+      right.appendChild(mkBtn("✅", "win", ()=>setAccaStatus(a.id,"won")));
+      right.appendChild(mkBtn("❌", "lose", ()=>setAccaStatus(a.id,"lost")));
+      right.appendChild(mkBtn("⚪", "void", ()=>setAccaStatus(a.id,"void")));
+      right.appendChild(mkBtn("🗑️", "del", ()=>removeAcca(a.id)));
 
       top.appendChild(left); top.appendChild(right);
       item.appendChild(top);
