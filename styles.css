@@ -730,3 +730,32 @@ canvas {
     flex: 0 0 auto;
   }
 }
+/* FORCE tracker card to contain everything */
+.trackItem {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+/* Button row MUST respect card width */
+.trackBtns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Individual buttons */
+.trackBtn {
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+
+/* Mobile hard clamp */
+@media (max-width: 480px) {
+  .trackBtns {
+    justify-content: flex-start;
+  }
+}
