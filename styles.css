@@ -705,3 +705,29 @@ canvas{image-rendering:crisp-edges;image-rendering:pixelated;}
     max-width: 100%;
   }
 }
+/* === MOBILE FIX: keep action buttons inside card === */
+@media (max-width: 600px) {
+
+  .tracker-row,
+  .tracker-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tracker-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    max-width: 100%;
+  }
+
+  .tracker-actions button,
+  .tracker-actions .icon-btn {
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+  }
+
+}
