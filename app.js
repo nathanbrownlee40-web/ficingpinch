@@ -219,6 +219,65 @@ function fmtBankrollLabel(t){
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+// --- Canvas helpers (mobile-safe glow + gradients) ---
+function _hexToRgb(hex){
+  const h = (hex||"").replace('#','').trim();
+  if(h.length===3){
+    const r = parseInt(h[0]+h[0],16), g=parseInt(h[1]+h[1],16), b=parseInt(h[2]+h[2],16);
+    return {r,g,b};
+  }
+  if(h.length===6){
+    const r = parseInt(h.slice(0,2),16), g=parseInt(h.slice(2,4),16), b=parseInt(h.slice(4,6),16);
+    return {r,g,b};
+  }
+  return null;
+}
+
+function _parseColorToRgb(color){
+  const c = (color||"").toString().trim();
+  if(!c) return null;
+  if(c.startsWith('#')) return _hexToRgb(c);
+  const m = c.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if(m) return {r: +m[1], g:+m[2], b:+m[3]};
+  return null;
+}
+
+function _rgba(color, a){
+  const rgb = _parseColorToRgb(color);
+  if(!rgb) return color;
+  const alpha = Math.max(0, Math.min(1, (typeof a==="number"?a:1)));
+  return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha})`;
+}
+
+function _strokeWithFakeGlow(ctx, buildPath, mainStrokeStyle, glowBaseColor){
+  ctx.save();
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  // Outer glow
+  buildPath();
+  ctx.globalAlpha = 0.22;
+  ctx.strokeStyle = _rgba(glowBaseColor, 0.55);
+  ctx.lineWidth = 10;
+  ctx.stroke();
+
+  // Mid glow
+  buildPath();
+  ctx.globalAlpha = 0.38;
+  ctx.strokeStyle = _rgba(glowBaseColor, 0.75);
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
+  // Sharp line
+  buildPath();
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = mainStrokeStyle;
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.restore();
+}
+
 function drawBankrollChart(canvas, points, labels, opts={}){
   if(!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext("2d");
@@ -247,8 +306,16 @@ function drawBankrollChart(canvas, points, labels, opts={}){
 
   // Normalize labels
   const labs = Array.isArray(labels) && labels.length === points.length ? labels : points.map((_,i)=> String(i));
-  const color = opts.color || "rgba(34,197,94,.95)";
-  const shadowColor = opts.shadowColor || color.replace(/rgba\(([^)]+),\s*([0-9.]+)\)/, "rgba($1,0.35)");
+
+  // Profit/loss auto coloring (requested)
+  const firstV = points[0];
+  const lastV  = points[points.length-1];
+  const isProfit = (lastV - firstV) >= 0;
+  const upColor   = opts.upColor   || "rgba(34,197,94,0.95)";   // green
+  const downColor = opts.downColor || "rgba(239,68,68,0.95)";   // red
+  const useAuto = opts.autoColor !== false;
+  const baseColor = useAuto ? (isProfit ? upColor : downColor) : (opts.color || upColor);
+  const glowBase  = opts.glowColor || baseColor;
   const valueFn = (typeof opts.valueFn === "function") ? opts.valueFn : money;
 
   const min = Math.min(...points);
@@ -282,22 +349,23 @@ function drawBankrollChart(canvas, points, labels, opts={}){
   const xStep = (cssW-padL-padR) / (points.length-1);
   const yScale = (cssH-padT-padB) / rng;
 
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = color;
-  ctx.shadowColor = shadowColor;
-  ctx.shadowBlur = 10;
+  // Gradient stroke (premium look) + mobile-safe fake glow
+  const grad = ctx.createLinearGradient(0, padT, 0, cssH-padB);
+  grad.addColorStop(0, _rgba(baseColor, 1));
+  grad.addColorStop(1, _rgba(baseColor, 0.55));
 
-  ctx.beginPath();
-  for(let i=0;i<points.length;i++){
-    const x = padL + i*xStep;
-    const y = padT + (max-points[i]) * yScale;
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  }
-  ctx.stroke();
+  const buildPath = ()=>{
+    ctx.beginPath();
+    for(let i=0;i<points.length;i++){
+      const x = padL + i*xStep;
+      const y = padT + (max-points[i]) * yScale;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+  };
+  _strokeWithFakeGlow(ctx, buildPath, grad, glowBase);
 
   // points
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = color;
+  ctx.fillStyle = baseColor;
   for(let i=0;i<points.length;i++){
     const x = padL + i*xStep;
     const y = padT + (max-points[i]) * yScale;
@@ -1233,7 +1301,8 @@ header.appendChild(chartWrap);
 
     // Total bankroll (starting bankroll + all markets)
     const sAll = series(decidedAll, br.start);
-    drawBankrollChart($("brChart"), sAll.pts, sAll.labs, { color: "rgba(34,197,94,.95)" });
+    // Auto-color: green glow if profit, red glow if loss
+    drawBankrollChart($("brChart"), sAll.pts, sAll.labs, { autoColor: true });
 
     // Market-specific bankroll curves (starting bankroll + only that market)
     const keyO25 = marketKey("Over 2.5");
@@ -1244,8 +1313,9 @@ header.appendChild(chartWrap);
     const sO25 = series(decidedO25, br.start);
     const sBTTS = series(decidedBTTS, br.start);
 
-    drawBankrollChart($("brChartO25"), sO25.pts, sO25.labs, { color: "rgba(59,130,246,.95)" });
-    drawBankrollChart($("brChartBTTS"), sBTTS.pts, sBTTS.labs, { color: "rgba(168,85,247,.95)" });
+    // Auto-color per market curve
+    drawBankrollChart($("brChartO25"), sO25.pts, sO25.labs, { autoColor: true });
+    drawBankrollChart($("brChartBTTS"), sBTTS.pts, sBTTS.labs, { autoColor: true });
   }catch(e){}
 
   // league charts

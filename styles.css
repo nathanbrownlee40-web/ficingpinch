@@ -574,6 +574,7 @@ body{overflow-x:hidden;}
   body.trackerView .trackerLeagueCharts{
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     overflow: hidden;
   }
 
@@ -596,6 +597,9 @@ body{overflow-x:hidden;}
   body.trackerView .trackerChart canvas{
     width: 100% !important;
     height: 180px !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    display: block;
   }
 
   /* Slightly tighter chart cards */
