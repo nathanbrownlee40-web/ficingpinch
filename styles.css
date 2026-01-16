@@ -769,3 +769,27 @@ canvas {
     height: 42px;
   }
 }
+/* === FORCE TRACKER ACTIONS INSIDE CARD (MOBILE FIX) === */
+@media (max-width: 768px) {
+
+  .pick-card {
+    position: relative !important;
+  }
+
+  .tracker-actions,
+  .action-buttons,
+  .pick-actions {
+    position: static !important;
+    display: flex !important;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-start;
+  }
+
+  .tracker-actions button,
+  .action-buttons button,
+  .pick-actions button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
