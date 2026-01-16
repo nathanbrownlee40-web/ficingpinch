@@ -1,5 +1,0 @@
-# Netlify config (static site)
-[build]
-  base = "."
-  publish = "."
-  command = ""  # no build step for plain HTML/JS/CSS
