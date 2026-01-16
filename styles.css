@@ -520,3 +520,61 @@ canvas{ image-rendering:auto; }
     flex-basis: 150px;
   }
 }
+/* =========================
+   MOBILE TRACKER FIT FIX
+   ========================= */
+
+@media (max-width: 600px) {
+
+  /* kill horizontal scroll */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* tracker list item */
+  .trackItem {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* top row becomes vertical */
+  .trackTop {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* left info */
+  .trackLeft {
+    width: 100%;
+  }
+
+  /* right controls */
+  .trackRight {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* stake + odds inputs */
+  .trackInputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* action buttons row */
+  .trackBtnRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+
+  .trackBtn {
+    flex: 0 0 auto;
+  }
+}
