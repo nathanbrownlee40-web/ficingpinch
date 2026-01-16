@@ -190,6 +190,12 @@ body.compact .cardList{display:block}
 @media (max-width: 640px){
   .kv{grid-template-columns: 1fr; gap: 6px}
 }
+
+@media (max-width: 640px){
+  body.trackerView .tsMetric span{ font-size: 11px; }
+  body.trackerView .tsMetric b{ font-size: 13px; }
+  body.trackerView .tsTable td{ padding: 6px 8px; font-size: 12px; }
+}
 .k{color: var(--muted); font-size:12px}
 .v{font-size: 14px}
 
@@ -241,12 +247,9 @@ body.compact .cardList{display:block}
 
 .trackActions{
   display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:10px;
-  min-width: 170px;
+  align-items:center;
+  gap:8px;
 }
-
 
 .trackBtn{
   border:1px solid rgba(255,255,255,.18);
@@ -284,6 +287,42 @@ body.trackerView #tableWrap{ display:none !important; }
   border-radius: 16px;
   background: rgba(255,255,255,.04);
 }
+
+/* Tracker stats (mobile + desktop) */
+.tsSummary{ display:grid; gap:6px; }
+.tsMetric{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  line-height:1.15;
+  padding: 2px 0;
+}
+.tsMetric span{ font-size: 12px; opacity: .75; }
+.tsMetric b{ font-size: 14px; letter-spacing: .2px; }
+
+.tsTable{
+  width:100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  table-layout: fixed;
+}
+.tsTable td{
+  padding: 8px 10px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 13px;
+}
+.tsTable td:nth-child(2),
+.tsTable td:nth-child(4){
+  text-align:right;
+  font-weight: 900;
+  white-space: nowrap;
+}
+.tsTable td:nth-child(1),
+.tsTable td:nth-child(3){
+  opacity:.85;
+  white-space: nowrap;
+}
 .tsRow{
   display:flex;
   align-items:baseline;
@@ -293,6 +332,14 @@ body.trackerView #tableWrap{ display:none !important; }
   opacity: .95;
 }
 .tsRow b{ font-size: 15px; }
+
+/* Tracker summary: small sub-metric under Win rate */
+.tsSubMetric{
+  margin-top:6px;
+  font-size:11px;
+  opacity:.85;
+}
+.tsSubMetric b{ font-size:12px; }
 
 .trackerBankroll{
   padding: 12px;
@@ -357,6 +404,12 @@ body.trackerView #tableWrap{ display:none !important; }
 @media (min-width: 520px){
   .trackerHeader{ grid-template-columns: 1fr 1fr; }
   .trackerChart{ grid-column: 1 / -1; }
+}
+
+@media (max-width: 420px){
+  .tsMetric span{ font-size: 11px; }
+  .tsMetric b{ font-size: 13px; }
+  .tsTable td{ padding: 7px 8px; font-size: 12px; }
 }
 
 .trackerFilters{
@@ -495,86 +548,147 @@ body.trackerView #tableWrap{ display:none !important; }
 canvas{ image-rendering:auto; }
 
 
-/* --- Tracker card: keep action buttons inside on mobile --- */
-.trackItem .cardTop{
-  align-items:flex-start;
-  gap:14px;
-}
-.trackItem .trackActions{
-  min-width: 170px;
-  max-width: 170px;
-  flex: 0 0 170px;
-}
-.trackBtnRow{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-  gap:8px;
-  max-width: 170px;
-}
+/* Prevent sideways scroll */
+body{overflow-x:hidden;}
 
-@media (max-width: 420px){
-  .trackItem .trackActions{
-    min-width: 150px;
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-}
-/* =========================
-   MOBILE TRACKER FIT FIX
-   ========================= */
-
-@media (max-width: 600px) {
-
-  /* kill horizontal scroll */
-  html, body {
+/* ===== Tracker: mobile fit (prevents horizontal overflow) ===== */
+@media (max-width: 520px){
+  body.trackerView{
     overflow-x: hidden;
   }
+  body.trackerView .container{
+    max-width: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 
-  /* tracker list item */
+  /* Stack tracker sections so nothing forces width */
+  body.trackerView .trackerHeader{
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+  body.trackerView .trackerStats,
+  body.trackerView .trackerBankroll,
+  body.trackerView .trackerFilters,
+  body.trackerView .trackerChart,
+  body.trackerView .trackerLeagueCharts{
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Tracker stats table: make it wrap instead of widening the page */
+  body.trackerView .tsTable{
+    width: 100%;
+    table-layout: fixed;
+  }
+  body.trackerView .tsTable td{
+    padding: 6px 6px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  /* Charts: always fit screen */
+  body.trackerView canvas{
+    max-width: 100% !important;
+  }
+  body.trackerView .trackerChart canvas{
+    width: 100% !important;
+    height: 180px !important;
+  }
+
+  /* Slightly tighter chart cards */
+  body.trackerView .trackerChart,
+  body.trackerView .trackerLeagueCharts{
+    padding: 10px;
+  }
+
+  /* Hide any accidental horizontal scrollbar from card list */
+  body.trackerView .cardList,
+  body.trackerView .tableScroll{
+    overflow-x: hidden;
+  }
+}
+
+
+/* --- Tracker mobile tidy (tracker only) --- */
+@media (max-width: 640px){
+  body.trackerView .trackerStats{ padding: 14px; }
+  body.trackerView .tsSummary{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+  }
+  body.trackerView .tsMetric{
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    line-height: 1.1;
+  }
+  body.trackerView .tsMetric span{ font-size: 11px; }
+  body.trackerView .tsMetric b{ font-size: 13px; }
+  body.trackerView .tsSubMetric{
+    margin-top: 2px;
+    font-size: 11px;
+    opacity: .9;
+  }
+  body.trackerView .tsSubMetric b{ font-size: 12px; }
+
+  /* Make the small table fit phones */
+  body.trackerView .tsTable{
+    margin-top: 10px;
+    table-layout: auto;
+  }
+  body.trackerView .tsTable td{
+    padding: 6px 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  body.trackerView .tsTable td:first-child{ opacity: .75; }
+}
+
+canvas{image-rendering:crisp-edges;image-rendering:pixelated;}
+
+/* =========================
+   FINAL SAFE MOBILE TRACKER FIX
+   ========================= */
+@media (max-width: 600px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
   .trackItem {
     width: 100%;
     max-width: 100%;
     overflow: hidden;
   }
 
-  /* top row becomes vertical */
   .trackTop {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
 
-  /* left info */
-  .trackLeft {
-    width: 100%;
-  }
-
-  /* right controls */
-  .trackRight {
+  .trackActions {
     width: 100%;
     max-width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: flex-start;
   }
 
-  /* stake + odds inputs */
-  .trackInputs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  /* action buttons row */
   .trackBtnRow {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     justify-content: flex-start;
   }
 
   .trackBtn {
-    flex: 0 0 auto;
+    min-width: 40px;
+    height: 34px;
+    padding: 0;
+    font-size: 15px;
   }
 }
