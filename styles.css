@@ -730,3 +730,42 @@ canvas {
     flex: 0 0 auto;
   }
 }
+/* ===============================
+   FORCE ACTION BUTTONS INSIDE CARD (MOBILE FIX)
+   =============================== */
+
+@media (max-width: 768px) {
+
+  /* Card layout safety */
+  .pick,
+  .tracker-card,
+  .card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Action buttons wrapper */
+  .pick-actions,
+  .action-buttons,
+  .actions,
+  .tracker-actions {
+    position: static !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 10px !important;
+    margin-top: 10px !important;
+    width: 100% !important;
+  }
+
+  /* Individual buttons */
+  .pick-actions button,
+  .action-buttons button,
+  .tracker-actions button {
+    position: static !important;
+    transform: none !important;
+    min-width: 42px;
+    height: 42px;
+  }
+}
